@@ -1,6 +1,6 @@
-# Social Media Backend
+# customer identification Backend
 
-A Node.js backend API for a social media platform with user authentication, content creation, and social features.
+A Node.js backend API for managing customer's contact details.
 
 ## Setup Instructions
 
@@ -14,12 +14,6 @@ A Node.js backend API for a social media platform with user authentication, cont
 
     ```
     PORT=3000
-    DB_HOST=localhost
-    DB_PORT=5432
-    DB_NAME=social_media_db
-    DB_USER=your_db_user
-    DB_PASSWORD=your_db_password
-    JWT_SECRET=your_jwt_secret_key
     ```
 
 3. Set up PostgreSQL database and run the setup script:
@@ -45,6 +39,4 @@ npm start
 
 -   `npm start` - Start the application in production mode
 -   `npm run dev` - Start the application in development mode with nodemon
--   `npm run start:verbose` - Start with verbose logging
--   `npm run start:critical` - Start with critical-only logging
 -   `npm run setup:db` - Set up database tables
