@@ -6,8 +6,8 @@ import { Request, Response, NextFunction, response } from "express";
  */
 
 export const identitySchema = z.object({
-    email: z.email().optional(),
-    phoneNumber: z.string().optional(),
+    email: z.email().nullable().optional(),
+    phoneNumber: z.string().nullable().optional(),
 });
 export type Identity = z.infer<typeof identitySchema>;
 
