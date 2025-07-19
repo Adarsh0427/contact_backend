@@ -1,26 +1,19 @@
-const { Pool } = require("pg");
-const logger = require("./logger");
-
-let pool : any = null;
+import { Pool } from "pg";
 
 /**
- * Initialize database connection pool
+ * Initialize database connection pool for neon PostgreSQL
  * @returns {Pool} PostgreSQL connection pool
  */
 const initializePool = () => {
-	if (!pool) {
-		pool = new Pool({
-			host: process.env.DB_HOST,
-			port: Number(process.env.DB_PORT),
-			database: process.env.DB_NAME,
-			user: process.env.DB_USER,
-			password: process.env.DB_PASSWORD,
-		});
 
-		pool.on("error", (err : Error) => {
-			logger.critical("Unexpected error on idle client", err);
-		});
-	}
+	const pool = new Pool({
+		connectionString: process.env.DATABASE_URL,
+	});
+
+	pool.on("error", (err : Error) => {
+		console.error("Unexpected error on idle client", err);
+	});
+	
 	return pool;
 };
 
@@ -31,10 +24,10 @@ export const connectDB = async () => {
 	try {
 		const dbPool = initializePool();
 		const client = await dbPool.connect();
-		logger.verbose("Connected to PostgreSQL database");
+		console.log("Connected to the database successfully!");
 		client.release();
 	} catch (error) {
-		logger.critical("Failed to connect to database:", error);
+		console.error("Failed to connect to database:", error);
 		throw error;
 	}
 };
@@ -52,14 +45,14 @@ export const query = async (text : string, params : any[] = []) => {
 	try {
 		const result = await dbPool.query(text, params);
 		const duration = Date.now() - start;
-		logger.verbose("Executed query", {
+		console.log("Executed query", {
 			text,
 			duration,
 			rows: result.rowCount,
 		});
 		return result;
 	} catch (error) {
-		logger.critical("Database query error:", error);
+		console.error("Database query error:", error);
 		throw error;
 	}
 };
