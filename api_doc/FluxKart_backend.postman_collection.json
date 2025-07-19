@@ -1,0 +1,96 @@
+{
+	"info": {
+		"_postman_id": "b10f8f40-38be-43e3-a5a9-83f46df35da8",
+		"name": "FluxKart_backend",
+		"description": "FluxKart.com is deadpan serious about their customer experience.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "32305963"
+	},
+	"item": [
+		{
+			"name": "identify",
+			"item": [
+				{
+					"name": "initial_record_1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"george@hillvalley.edu\",\n    \"phoneNumber\": \"717171\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/identify"
+					},
+					"response": []
+				},
+				{
+					"name": "initial_record_2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"george@hillvalley.edu\",\n    \"phoneNumber\": \"717171\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/identify"
+					},
+					"response": []
+				},
+				{
+					"name": "nullEmail",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":null,\n    \"phoneNumber\": \"717171\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/identify"
+					},
+					"response": []
+				},
+				{
+					"name": "nullPhoneNumber",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"george@hillvalley.edu\",\n    \"phoneNumber\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/identify"
+					},
+					"response": []
+				}
+			],
+			"description": "Get contact details of customer's identity across multiple purchases."
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "default"
+		}
+	]
+}

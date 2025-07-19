@@ -69,13 +69,29 @@ export const findLinkedContacts = async (email?: string, phoneNumber?: string) =
  * @returns {Promise<Object>} Newly created contact details
  */
 export const addContact = async (contact: { email: string; phoneNumber: string }) => {
-    const sql = `
-        INSERT INTO contact (email, phoneNumber, linkPrecedence, linkedId, deletedAt)
-        VALUES ($1, $2, 'primary', NULL, NULL)
-        RETURNING *
-    `;
-    const result = await query(sql, [contact.email, contact.phoneNumber]);
-    return result.rows[0];
+    try {
+        const sql = `
+            INSERT INTO contact (email, phoneNumber, linkPrecedence, linkedId, deletedAt)
+            VALUES ($1, $2, 'primary', NULL, NULL)
+            RETURNING *
+        `;
+        const result = await query(sql, [contact.email, contact.phoneNumber]);
+        return result.rows[0];
+    } catch (error: any) {
+        // Check if it's a duplicate key error
+        if (error.code === '23505') {
+            // For duplicate entries, query the existing record to maintain program flow
+            const selectSql = `
+                SELECT * FROM contact 
+                WHERE email = $1 AND phoneNumber = $2 AND deletedAt IS NULL
+                LIMIT 1
+            `;
+            const existingRecord = await query(selectSql, [contact.email, contact.phoneNumber]);
+            return existingRecord.rows[0] || null;
+        }
+        // Re-throw other errors
+        throw error;
+    }
 };
 
 /**

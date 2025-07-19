@@ -1,13 +1,11 @@
-import z, { ZodError } from "zod";
-import { Request, Response, NextFunction, response } from "express";
-
+import z from "zod";
 /**
  * Validation utility functions
  */
 
 export const identitySchema = z.object({
     email: z.email().nullable().optional(),
-    phoneNumber: z.string().nullable().optional(),
+    phoneNumber: z.string().regex(/^\d+$/, "Phone number must contain only digits").nullable().optional(),
 });
 export type Identity = z.infer<typeof identitySchema>;
 

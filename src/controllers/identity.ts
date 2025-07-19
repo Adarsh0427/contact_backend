@@ -32,24 +32,32 @@ export const handleIdentify = async (req: Request, res: Response) => {
             error: "At least one of email or phone number must be provided"
         });
     }
-    email = email?.trim() || "";
-    phoneNumber = phoneNumber?.trim() || "";
     try {
-        const existingContactId = await findLinkedContacts(email, phoneNumber);
-        if (existingContactId.length == 0) {
+        let existingContactId = await findLinkedContacts(email ? email : "", phoneNumber ? phoneNumber : "");
+        let newContact;
+        if (email && phoneNumber) {
+            newContact = await addContact({ email, phoneNumber });
+        }
+        if (existingContactId.length === 0) {
             // If no existing contact found, create a new one
             if (!email || !phoneNumber) {
                 return res.status(400).json({
                     error: "Both email and phone number are required to create a new contact"
                 });
             }
-            const newContact = await addContact({ email, phoneNumber });
             return res.status(200).json(formatResponse(newContact.id, {
                 emails: [newContact.email],
-                phoneNumbers: [newContact.phoneNumber]
+                phoneNumbers: [newContact.phonenumber]
             }));
         }
+
         const primaryId = existingContactId[0];
+
+        // add new contact to existing contact
+        if (newContact) {
+            existingContactId.push(newContact.id);
+        }
+        
         // console.log("existing contact found", existingContactId);
         const contactDetails = await getContactDetails(existingContactId);
         console.log("contact details found", contactDetails);

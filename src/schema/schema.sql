@@ -1,4 +1,3 @@
-
 CREATE TABLE IF NOT EXISTS Contact (
     id SERIAL PRIMARY KEY,
     phoneNumber VARCHAR(255),
@@ -8,7 +7,8 @@ CREATE TABLE IF NOT EXISTS Contact (
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deletedAt TIMESTAMP NULL,
-    FOREIGN KEY (linkedId) REFERENCES Contact(id)
+    FOREIGN KEY (linkedId) REFERENCES Contact(id),
+    UNIQUE (phoneNumber, email)
 );
 
 -- create index on Contact (phoneNumber) and (email):
