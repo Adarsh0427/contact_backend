@@ -1,14 +1,15 @@
 import { Request, Response } from "express";
-import {findLinkedContacts, addContact} from "../models/identify";
+import {findLinkedContacts, addContact, getContactDetails, updateLinkPrecedence } from "../models/identify";
 import { Identity, identitySchema } from "../utils/validation";
 
-const formatResponse = (primaryId : Number , details : any, existingIds? : Number[]) => {
+const formatResponse = (primaryId : Number , details : {emails: string[], phoneNumbers: string[], allIds?: number[]}, existingIds? : Number[]) => {
+    const secondaryIds = details.allIds?.filter(id => id !== primaryId) || [];
     return {
         contact: {
             primaryContactId: primaryId,
             emails: details.emails,
             phoneNumbers: details.phoneNumbers,
-            secondaryContactIds: existingIds || []
+            secondaryContactIds: secondaryIds || []
         }
     };
 };
@@ -48,11 +49,16 @@ export const handleIdentify = async (req: Request, res: Response) => {
                 phoneNumbers: [newContact.phoneNumber]
             }));
         }
+        const primaryId = existingContactId[0];
+        // console.log("existing contact found", existingContactId);
+        const contactDetails = await getContactDetails(existingContactId);
+        console.log("contact details found", contactDetails);
+        
+        updateLinkPrecedence(primaryId, contactDetails.allIds || []);
 
-        return res.status(200).json(formatResponse(existingContactId[0], {
-            emails: [email],
-            phoneNumbers: [phoneNumber]
-        }));
+        const response = formatResponse(primaryId, contactDetails);
+        return res.status(200).json(response);
+
     } catch (error) {
         return res.status(500).json({
             error: "Internal server error",
