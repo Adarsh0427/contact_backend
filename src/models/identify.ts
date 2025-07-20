@@ -43,6 +43,21 @@ const getPhoneNumberById = async (ids: number[]) => {
 };
 
 /**
+ * check if a contact exists by email and phone number
+ * @param {string} email - Email address
+ * @param {string} phoneNumber - Phone number
+ * @returns {Promise<number[]>} Array of contact IDs
+ */
+const contactExists = async (email: string, phoneNumber: string): Promise<number[]> => {
+    const sql = `
+        SELECT * FROM contact
+        WHERE email = $1 AND phoneNumber = $2 AND deletedAt IS NULL
+    `;
+    const result = await query(sql, [email, phoneNumber]);
+    return result.rows;
+};
+
+/**
  * Find a contact by details by email and phone number
  * @param {Object}  - Contact details (email and phone number)
  * @returns {Promise<Object>} unique linked contacts Id (oldest first)
@@ -70,6 +85,11 @@ export const findLinkedContacts = async (email?: string, phoneNumber?: string) =
  */
 export const addContact = async (contact: { email: string; phoneNumber: string }) => {
     try {
+        let result_row = await contactExists(contact.email, contact.phoneNumber);
+        if (result_row.length > 0) {
+            return result_row[0]; // Return existing contact if found
+        }
+        // Insert new contact if not found
         const sql = `
             INSERT INTO contact (email, phoneNumber, linkPrecedence, linkedId, deletedAt)
             VALUES ($1, $2, 'primary', NULL, NULL)
@@ -78,19 +98,8 @@ export const addContact = async (contact: { email: string; phoneNumber: string }
         const result = await query(sql, [contact.email, contact.phoneNumber]);
         return result.rows[0];
     } catch (error: any) {
-        // Check if it's a duplicate key error
-        if (error.code === '23505') {
-            // For duplicate entries, query the existing record to maintain program flow
-            const selectSql = `
-                SELECT * FROM contact 
-                WHERE email = $1 AND phoneNumber = $2 AND deletedAt IS NULL
-                LIMIT 1
-            `;
-            const existingRecord = await query(selectSql, [contact.email, contact.phoneNumber]);
-            return existingRecord.rows[0] || null;
-        }
-        // Re-throw other errors
-        throw error;
+        console.error("Error adding contact:", error);
+        throw new Error("Failed to add contact");
     }
 };
 

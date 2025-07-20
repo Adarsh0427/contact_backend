@@ -14,6 +14,7 @@ A Node.js backend API for managing customer's contact details.
 
     ```
     PORT=3000
+    DATABASE_URL=postgres://user:password@localhost:5432/mydatabase
     ```
 
 3. Set up PostgreSQL database and run the setup script:
